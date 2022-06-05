@@ -1,4 +1,5 @@
 import random
+import sys
 from time import time
 from Card import Card, Deck, Hand
 from Player import Player, Game
@@ -7,30 +8,16 @@ from Player import Player, Game
 printNum = [0,0, 'Two','Three','Four','Five','Six','Seven','Eight','Nine','Ten','Jack','Queen','King','Ace']
 printSuit = ['Spades','Hearts','Clubs','Diamonds']
 printRank = [0, "High card", "Two of a kind","Two pair", "Three of a kind","Straight", "Flush", "Full House", "Four of a kind", "Straight flush", "Royal flush"]
+labels = [' ',' ','2','3','4','5','6','7','8','9','10','J','Q','K','A']
+suit_labels = ['S', 'H', 'C', 'D']
 pred = [0,0]
 dealer = []
 hand = []
 deck = Deck()
 n = 16
-#Pre-Flop hand odds [2-A] x [2-A] x [Not-Suited, Suited]
-handOdds = [[[0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0]],
-			[[0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0]],
-			[[0, 0], [0, 0], [53, 0], [29, 32], [31, 34], [28, 34], [30, 35], [31, 34], [31, 36], [32, 38], [33, 36], [37, 38], [36, 37], [36, 41], [39, 44], [0, 0]],
-			[[0, 0], [0, 0], [30, 33], [55, 0], [30, 34], [31, 36], [33, 36], [32, 38], [30, 36], [32, 36], [31, 38], [33, 40], [34, 41], [37, 41], [43, 45], [0, 0]],
-			[[0, 0], [0, 0], [29, 35], [32, 36], [56, 0], [31, 36], [34, 38], [33, 37], [34, 38], [32, 36], [33, 38], [34, 37], [35, 40], [39, 39], [38, 45], [0, 0]],
-			[[0, 0], [0, 0], [31, 34], [32, 34], [32, 38], [57, 0], [36, 41], [36, 38], [34, 38], [35, 35], [34, 43], [36, 38], [34, 43], [37, 43], [42, 46], [0, 0]],
-			[[0, 0], [0, 0], [31, 36], [29, 38], [36, 38], [37, 37], [62, 0], [37, 40], [37, 38], [37, 42], [37, 41], [37, 41], [37, 39], [41, 44], [43, 46], [0, 0]],
-			[[0, 0], [0, 0], [30, 36], [32, 39], [33, 39], [33, 42], [39, 41], [62, 0], [36, 41], [38, 43], [39, 42], [37, 41], [42, 41], [39, 41], [45, 46], [0, 0]],
-			[[0, 0], [0, 0], [30, 35], [32, 34], [36, 36], [36, 38], [34, 42], [37, 44], [67, 0], [38, 44], [39, 47], [40, 44], [39, 43], [39, 46], [41, 49], [0, 0]],
-			[[0, 0], [0, 0], [31, 36], [34, 39], [36, 35], [33, 37], [36, 41], [40, 41], [41, 41], [65, 0], [38, 45], [40, 46], [41, 42], [44, 47], [43, 48], [0, 0]],
-			[[0, 0], [0, 0], [30, 36], [33, 37], [34, 39], [31, 40], [35, 39], [39, 42], [42, 42], [39, 46], [69, 0], [44, 46], [42, 47], [43, 50], [45, 50], [0, 0]],
-			[[0, 0], [0, 0], [32, 37], [30, 39], [36, 39], [34, 37], [36, 40], [37, 42], [37, 43], [41, 46], [46, 50], [74, 0], [42, 46], [45, 49], [47, 51], [0, 0]],
-			[[0, 0], [0, 0], [36, 37], [38, 39], [38, 41], [33, 39], [36, 39], [38, 43], [40, 44], [41, 45], [40, 44], [42, 45], [77, 0], [45, 50], [46, 51], [0, 0]],
-			[[0, 0], [0, 0], [38, 40], [37, 40], [36, 39], [37, 44], [40, 42], [43, 43], [42, 44], [42, 45], [46, 44], [44, 49], [42, 48], [80, 0], [46, 49], [0, 0]],
-			[[0, 0], [0, 0], [39, 46], [38, 44], [42, 44], [41, 45], [43, 47], [43, 48], [41, 49], [44, 48], [48, 48], [45, 50], [48, 51], [50, 51], [82, 0], [0, 0]]]
+input_string = 'type the following commands: q (Quit),  f (someone folded), [val][suit][val][suit][val][suit] (cards in the flop)'
 
-def ill(arr):
-	labels = [' ',' ','2','3','4','5','6','7','8','9','10','J','Q','K','A']
+def illustrate(arr):
 	blank = "        "
 	for i in range(0, 5):
 		line = ""
@@ -50,43 +37,157 @@ def ill(arr):
 				line += rows[i]
 		print(line)
 
-def simHandOdds():
-	for row in handOdds:
-		print(row)
-		print("Row")
-	tmp = [0,0]
-	for i in range(2,14):
-		for j in range(0,3):
-			tmp[0] = Card(i,j)
-			for k in range(2,14):
-				for l in range(0,3):
-					tmp[1] = Card(k,l)
-					if not tmp[0].equals(tmp[1]):
-						handOdds[i][k][j==l] = Hand(tmp).winRate([], tmp, 5000)
-	print(handOdds)
+
+# def simHandOdds():
+# 	for row in handOdds:
+# 		print(row)
+# 		print("Row")
+# 	tmp = [0,0]
+# 	for i in range(2,14):
+# 		for j in range(0,3):
+# 			tmp[0] = Card(i,j)
+# 			for k in range(2,14):
+# 				for l in range(0,3):
+# 					tmp[1] = Card(k,l)
+# 					if not tmp[0].equals(tmp[1]):
+# 						handOdds[i][k][j==l] = Hand(tmp).winRate([], tmp, 5000)
+# 	print(handOdds)
 
 
 if __name__ == '__main__':
-	players = ["Gabe", "Des", "Shauna"]
-	g = Game(players, [100, 1])
-	g.preFlop()
-	hands = []
-	for i in g.p:
-		hands.extend(i.hand.toList() + [Card(0,0)])
-	hands = g.p[0].hand.toList() + [Card(0,0), Card(-1,0), Card(-1,0),Card(0,0), Card(-1,0), Card(-1,0)]
-	ill(hands)
-	print(f'Odds P1: {g.p[0].hand.winRate(g.table, 1000, g.d)}')
-	print("", g.p)
-	g.flop()
-	ill(hands)
-	ill(g.table)
-	print("", g.p)
-	g.turn()
-	ill(hands)
-	ill(g.table)
-	print("", g.p)
+	players = None
+	while True:
+		try:
+			players = input('Int > 1: How many players (including yourself)? "Q" - Quit')
+			if players.upper() == 'Q':
+				break
+			players = int(players)
+			assert(players >= 2)
+		except: 
+			print('Input Not Valid')
+		else: break
+	player_names = []
+	for i in range(players):
+		player_names.append(f'p{i}')
+	g = Game(player_names, [100, 1])
+	# g.preFlop()
+	while True:
+		try:
+			hand = input('type your hand in format [val] [suit] [val] [suit]... i.e. k h 5 d (King of Hearts, 5 of Diamonds: Q - Quit, R - Random hand')
+			if hand.upper() == 'Q':
+				break
+			elif hand.upper() == 'R':
+				g.p[0].deal(g.d.deal(2))
+			else:
+				hand = hand.split(' ')
+				card1 = Card(labels.index(hand[0].upper()), suit_labels.index(hand[1].upper()))
+				card2 = Card(labels.index(hand[2].upper()), suit_labels.index(hand[3].upper()))
+				g.p[0].hand = Hand([card1, card2])
+				g.d.used.extend([card1, card2])
+		except:
+			print('Input Not Valid')
+		else: break
+	hands = [g.p[0].hand.card1, g.p[0].hand.card2]
+	for players in range(len(g.p) - 1):
+		hands.extend([Card(0,0), Card(-1,0), Card(-1,0)])
+	illustrate(hands)
+	print(f'\nYour hand has a {g.p[0].hand.odds}% chance of winning while averaging these hands.\n')
+	g.p[0].hand.winRate(g.table, 10000, g.d, debug = True)
 
-	g.river()
-	ill(hands)
-	ill(g.table)
+	while len(g.table) < 3:
+		try: 
+			cmd = input('type the following commands: q (Quit),  f (someone folded), [val] [suit] [val] [suit] [val] [suit] i.e. 7 h 8 h 9 h (cards in the flop)')
+			if cmd.upper() == 'Q':
+				break
+			elif cmd.upper() == 'F':
+				if len(g.p) > 2:
+					g.p.pop()
+					hands.pop()
+					hands.pop()
+					hands.pop()
+					illustrate(hands)
+				else:
+					print("You're the last one standing! Congrats!")
+					quit()
+			elif cmd.upper() == 'R':
+				g.table.extend(g.d.deal(3))
+			else:
+				cmd = cmd.split(' ')
+				g.table.extend([Card(labels.index(cmd[0].upper()), suit_labels.index(cmd[1].upper())),
+								Card(labels.index(cmd[2].upper()), suit_labels.index(cmd[3].upper())),
+								Card(labels.index(cmd[4].upper()), suit_labels.index(cmd[5].upper()))])
+				g.d.used.extend(g.table)
+		except:
+			print('Input Not Valid')
+	illustrate(hands)
+	illustrate(g.table)
+	print(f"\nWith those results you win {g.p[0].hand.winRate(g.table, 10000, g.d, debug = True)}% of the hands\n")
+
+	while len(g.table) < 4:
+		try: 
+			cmd = input('type the following commands: q (Quit),  f (someone folded), [val] [suit] i.e. A C (card in the turn)')
+			if cmd.upper() == 'Q':
+				break
+			elif cmd.upper() == 'F':
+				if len(g.p) > 2:
+					g.p.pop()
+					hands.pop()
+					hands.pop()
+					hands.pop()
+					illustrate(hands)
+				else:
+					print("You're the last one standing! Congrats!")
+					quit()
+			elif cmd.upper() == 'R':
+				g.table.extend(g.d.deal(1))
+			else:
+				cmd = cmd.split(' ')
+				turn = Card(labels.index(cmd[0].upper()), suit_labels.index(cmd[1].upper()))
+				g.table.append(turn)
+				g.d.used.append(turn)
+		except:
+			print('Input Not Valid')
+	illustrate(hands)
+	illustrate(g.table)
+	print(f"\nWith those results you win {g.p[0].hand.winRate(g.table, 10000, g.d, debug = True)}% of the hands\n")
+
+	while len(g.table) < 5:
+		try: 
+			cmd = input('type the following commands: q (Quit),  f (someone folded), [val] [suit] i.e. A C (card in the river)')
+			if cmd.upper() == 'Q':
+				break
+			elif cmd.upper() == 'F':
+				if len(g.p) > 2:
+					g.p.pop()
+					hands.pop()
+					hands.pop()
+					hands.pop()
+					illustrate(hands)
+				else:
+					print("You're the last one standing! Congrats!")
+					quit()
+			elif cmd.upper() == 'R':
+				g.table.extend(g.d.deal(1))
+			else:
+				cmd = cmd.split(' ')
+				turn = Card(labels.index(cmd[0].upper()), suit_labels.index(cmd[1].upper()))
+				g.table.append(turn)
+				g.d.used.append(turn)
+		except:
+			print('Input Not Valid')
+	illustrate(hands)
+	illustrate(g.table)
+	print(f"\nYou win {g.p[0].hand.winRate(g.table, 10000, g.d, debug = True)}% of hands with {g.p[0].hand.phrase}\n")
+	# g.flop()
+	# illustrate(hands)
+	# illustrate(g.table)
+	# print("", g.p)
+	# g.turn()
+	# illustrate(hands)
+	# illustrate(g.table)
+	# print("", g.p)
+
+	# g.river()
+	# illustrate(hands)
+	# illustrate(g.table)
 	

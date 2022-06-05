@@ -44,7 +44,7 @@ class Deck:
 					self.tmp.append(x)
 				j+=1
 				ret.append(x)
-		ret = Hand(ret)
+		# ret = Hand(ret)
 		return ret
 	def getSize(self):
 		return self.size
@@ -54,6 +54,8 @@ class Deck:
 		self.size = 52
 		self.used = []
 
+
+#Pre-Flop hand odds [2-A] x [2-A] x [Not-Suited, Suited]
 handOdds = [[[0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0]],
 			[[0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0]],
 			[[0, 0], [0, 0], [53, 0], [29, 32], [31, 34], [28, 34], [30, 35], [31, 34], [31, 36], [32, 38], [33, 36], [37, 38], [36, 37], [36, 41], [39, 44]],
@@ -143,8 +145,13 @@ class Hand:
 	#Find Flush
 		flush = False
 		if len(suit[0]) >= 6:
-			flushEnds = sorted(suit[0][1:], reverse=True)
-			flushEnds = [flushEnds[0], flushEnds[4]]
+			flushSort = sorted(suit[0][1:], reverse=True)
+			if len(flushSort) >= 5:
+				for i in range(len(flushSort) - 4):
+					if flushSort[i] - flushSort[i+4] == 4:
+						phrase = "Straight flush " + printNum[flushSort[i+4]] + " to " + printNum[flushSort[i]] + " of " + printSuit[suit[0][0]]
+						if rank[0] < 9: rank = [9, flushSort[i], flushSort[i]]
+			flushEnds = [flushSort[0], flushSort[4]]
 			phrase = "Flush of " + printSuit[suit[0][0]] + ", " + printNum[flushEnds[0]] + " High"
 			if rank[0]  < 6: rank = [6, flushEnds[0], flushEnds[0]]
 			flush = True
@@ -202,7 +209,7 @@ class Hand:
 			tmpHnd.rankHand(tmpCards + dlr)
 			sim = tmpHnd.rank
 			#if len(dlr) == 5:
-			#	odds[sim[0]] += 100/reps
+			odds[actual[0]] += 100/reps
 			if sim[0] < actual[0]:
 				wins += 1
 			elif sim[0] == actual[0]:
@@ -211,10 +218,11 @@ class Hand:
 			i+=1
 			deck.purge()
 		if debug:
-			print(wins, " / ", reps)
-			end = time() * 1000
-			print(end - start)
-			if len(dlr) == 5:
-				for i in range(1,11):
+			# print(wins, " / ", reps)
+			# end = time() * 1000
+			# print(end - start)
+			print('Your hand leads to')
+			for i in range(1,11):
+				if odds[i] > 0:
 					print(round(odds[i], 1), "%", printRank[i])
-		self.winPerc = round(wins * 100 / reps)
+		return round(wins * 100 / reps)

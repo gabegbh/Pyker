@@ -1,5 +1,5 @@
 from time import time
-from Card import Card, Deck
+from Card import Card, Deck, Hand
 import random
 
 class Player:
@@ -11,7 +11,7 @@ class Player:
         self.chipsIn = 0 #number of chips bet in one round - resets at next bet round
 
     def deal(self, hand): #redeal new cards to existing player
-        self.hand = hand 
+        self.hand = Hand(hand)
 
     def play(self, bigHand): #decide raise call or fold RANDOM NOW MUST CHANGE
         ret = ["Raise", "Call", "Raise", "Call","Call","Fold"]
