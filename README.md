@@ -12,7 +12,7 @@ As it stands, the basic CLI design is less than optimal to use intuatively. A GU
 
 ## Demo
 For this demo we will play a hand while randomizing our hand and the table against 3 players.
-1. Our random hand where we win a pretty high 67% of rounds with.
+1. Our random hand where we win a pretty high 67% of rounds with pocket 8's.
 ![image](https://user-images.githubusercontent.com/24580466/173734948-5d53f48c-dfaa-4c17-a7d8-562c3b42682d.png)
 2. The random flop was not kind to us, our hand has less favorable percentages with no pairs made.
 ![image](https://user-images.githubusercontent.com/24580466/173734991-cda96883-86af-40e6-bc51-398ce013bb24.png)
