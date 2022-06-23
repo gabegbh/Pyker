@@ -8,7 +8,7 @@ Beginning as a simple script to determine the best poker hand out of a set of 7 
 As each hand of poker progresses, the program runs 10,000 hands randomizing the opponents' cards as well as the yet to be revealed table cards. During each of these simulations, it records your best hand and the winning hand. Once all 10,000 collect data, it returns a list of all poker hands and the odds of you drawing that hand along with the percent of all hands that you'd win. Each time a new card is drawn or a player has folded, it will reevaluate your odds of winning and your potential hands.
 
 ## Future Plans
-As it stands, the basic CLI design is less than optimal to use intuatively. A GUI that is simple and intuative will be added moving forward, along with many more statistics that couldn't fit well in a CLI without being cluttered. 
+As it stands, the basic CLI design is less than optimal to use intuitively. A GUI that is simple and intuitive will be added moving forward, along with many more statistics that couldn't fit well in a CLI without being cluttered. 
 
 ## Demo
 For this demo we will play a hand while randomizing our hand and the table against 3 players.
