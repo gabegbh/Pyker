@@ -55,7 +55,7 @@ def illustrate(arr):
 # 	print(handOdds)
 
 if __name__ == '__main__':
-	#w = curses.initscr()
+	w = curses.initscr()
 	players = None
 	q = False
 	while not q:
