@@ -3,6 +3,7 @@ import sys
 from time import time
 from Card import Card, Deck, Hand
 from Player import Player, Game
+import curses
 
 
 printNum = [0,0, 'Two','Three','Four','Five','Six','Seven','Eight','Nine','Ten','Jack','Queen','King','Ace']
@@ -53,13 +54,15 @@ def illustrate(arr):
 # 						handOdds[i][k][j==l] = Hand(tmp).winRate([], tmp, 5000)
 # 	print(handOdds)
 
-
 if __name__ == '__main__':
+	#w = curses.initscr()
 	players = None
-	while True:
+	q = False
+	while not q:
 		try:
 			players = input('Int > 1: How many players (including yourself)? "Q" - Quit')
 			if players.upper() == 'Q':
+				q = True
 				break
 			players = int(players)
 			assert(players >= 2)
@@ -71,10 +74,12 @@ if __name__ == '__main__':
 		player_names.append(f'p{i}')
 	g = Game(player_names, [100, 1])
 	# g.preFlop()
-	while True:
+#type the following commands: q (Quit),  f (someone folded), [val] [suit] [val] [suit] [val] [suit] i.e. 7 h 8 h 9 h (cards in the flop)f
+	while not q:
 		try:
 			hand = input('type your hand in format [val] [suit] [val] [suit]... i.e. k h 5 d (King of Hearts, 5 of Diamonds: Q - Quit, R - Random hand')
 			if hand.upper() == 'Q':
+				q = True
 				break
 			elif hand.upper() == 'R':
 				g.p[0].deal(g.d.deal(2))
@@ -87,17 +92,18 @@ if __name__ == '__main__':
 		except:
 			print('Input Not Valid')
 		else: break
-	hands = [g.p[0].hand.card1, g.p[0].hand.card2]
-	for players in range(len(g.p) - 1):
-		hands.extend([Card(0,0), Card(-1,0), Card(-1,0)])
-	illustrate(hands)
-	print(f'\nYour hand has a {g.p[0].hand.odds}% chance of winning while averaging these hands.\n')
-	g.p[0].hand.winRate(g.table, 10000, g.d, debug = True)
-
-	while len(g.table) < 3:
+	if not q:
+		hands = [g.p[0].hand.card1, g.p[0].hand.card2]
+		for players in range(len(g.p) - 1):
+			hands.extend([Card(0,0), Card(-1,0), Card(-1,0)])
+		illustrate(hands)
+		print(f'\nYour hand has a {int(((g.p[0].hand.odds / 100) ** (len(g.p) - 1)) * 100)}% chance of winning while averaging these hands.\n')
+		g.p[0].hand.winRate(g.table, 50000, g.d, debug = True)
+	while not q and len(g.table) < 3:
 		try: 
 			cmd = input('type the following commands: q (Quit),  f (someone folded), [val] [suit] [val] [suit] [val] [suit] i.e. 7 h 8 h 9 h (cards in the flop)')
 			if cmd.upper() == 'Q':
+				q = True
 				break
 			elif cmd.upper() == 'F':
 				if len(g.p) > 2:
@@ -106,6 +112,7 @@ if __name__ == '__main__':
 					hands.pop()
 					hands.pop()
 					illustrate(hands)
+					print(f'\nYour hand has a {int(((g.p[0].hand.odds / 100) ** (len(g.p) - 1)) * 100)}% chance of winning while averaging these hands.\n')
 				else:
 					print("You're the last one standing! Congrats!")
 					quit()
@@ -119,14 +126,16 @@ if __name__ == '__main__':
 				g.d.used.extend(g.table)
 		except:
 			print('Input Not Valid')
-	illustrate(hands)
-	illustrate(g.table)
-	print(f"\nWith those results you win {g.p[0].hand.winRate(g.table, 10000, g.d, debug = True)}% of the hands\n")
+	if not q:
+		illustrate(hands)
+		illustrate(g.table)
+		print(f"\nWith those results you win {int(((g.p[0].hand.winRate(g.table, 50000, g.d, debug = True) / 100) ** (len(g.p) - 1)) * 100)}% of the hands\n")
 
-	while len(g.table) < 4:
+	while not q and len(g.table) < 4:
 		try: 
 			cmd = input('type the following commands: q (Quit),  f (someone folded), [val] [suit] i.e. A C (card in the turn)')
 			if cmd.upper() == 'Q':
+				q = True
 				break
 			elif cmd.upper() == 'F':
 				if len(g.p) > 2:
@@ -147,14 +156,16 @@ if __name__ == '__main__':
 				g.d.used.append(turn)
 		except:
 			print('Input Not Valid')
-	illustrate(hands)
-	illustrate(g.table)
-	print(f"\nWith those results you win {g.p[0].hand.winRate(g.table, 10000, g.d, debug = True)}% of the hands\n")
+	if not q:
+		illustrate(hands)
+		illustrate(g.table)
+		print(f"\nWith those results you win {int(((g.p[0].hand.winRate(g.table, 50000, g.d, debug = True) / 100) ** (len(g.p) - 1)) * 100)}% of the hands\n")
 
-	while len(g.table) < 5:
+	while not q and len(g.table) < 5:
 		try: 
 			cmd = input('type the following commands: q (Quit),  f (someone folded), [val] [suit] i.e. A C (card in the river)')
 			if cmd.upper() == 'Q':
+				q = True
 				break
 			elif cmd.upper() == 'F':
 				if len(g.p) > 2:
@@ -175,9 +186,10 @@ if __name__ == '__main__':
 				g.d.used.append(turn)
 		except:
 			print('Input Not Valid')
-	illustrate(hands)
-	illustrate(g.table)
-	print(f"\nYou win {g.p[0].hand.winRate(g.table, 10000, g.d, debug = True)}% of hands with {g.p[0].hand.phrase}\n")
+	if not q:
+		illustrate(hands)
+		illustrate(g.table)
+		print(f"\nYou win {int(((g.p[0].hand.winRate(g.table, 50000, g.d, debug = True) / 100) ** (len(g.p) - 1)) * 100)}% of hands with {g.p[0].hand.phrase}\n")
 	# g.flop()
 	# illustrate(hands)
 	# illustrate(g.table)
