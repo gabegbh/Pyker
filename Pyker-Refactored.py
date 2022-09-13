@@ -54,28 +54,34 @@ def illustrate(arr):
 # 						handOdds[i][k][j==l] = Hand(tmp).winRate([], tmp, 5000)
 # 	print(handOdds)
 
-if __name__ == '__main__':
-	w = curses.initscr()
+def main(w):
 	players = None
 	q = False
-	while not q:
+	while True:
 		try:
-			players = input('Int > 1: How many players (including yourself)? "Q" - Quit')
-			if players.upper() == 'Q':
-				q = True
-				break
-			players = int(players)
-			assert(players >= 2)
+			w.addstr(0,0,'Int > 1: How many players (including yourself)? "Q" - Quit')
+			usr =  w.getkey()
+			if usr.upper() == 'Q':
+				return
+			players = int(usr)
+			assert(players >= 2 and players <= 5)
 		except: 
-			print('Input Not Valid')
-		else: break
+			w.addstr('   Input Not Valid')
+		else:
+			w.addch(' ')
+			w.addch(usr)
+			w.addstr(' Players Added! ')
+			w.refresh()
+			break
 	player_names = []
 	for i in range(players):
 		player_names.append(f'p{i}')
 	g = Game(player_names, [100, 1])
 	# g.preFlop()
 #type the following commands: q (Quit),  f (someone folded), [val] [suit] [val] [suit] [val] [suit] i.e. 7 h 8 h 9 h (cards in the flop)f
-	while not q:
+	
+	
+	while True:
 		try:
 			hand = input('type your hand in format [val] [suit] [val] [suit]... i.e. k h 5 d (King of Hearts, 5 of Diamonds: Q - Quit, R - Random hand')
 			if hand.upper() == 'Q':
@@ -190,16 +196,11 @@ if __name__ == '__main__':
 		illustrate(hands)
 		illustrate(g.table)
 		print(f"\nYou win {int(((g.p[0].hand.winRate(g.table, 50000, g.d, debug = True) / 100) ** (len(g.p) - 1)) * 100)}% of hands with {g.p[0].hand.phrase}\n")
-	# g.flop()
-	# illustrate(hands)
-	# illustrate(g.table)
-	# print("", g.p)
-	# g.turn()
-	# illustrate(hands)
-	# illustrate(g.table)
-	# print("", g.p)
 
-	# g.river()
-	# illustrate(hands)
-	# illustrate(g.table)
-	
+if __name__ == '__main__':
+	#w = curses.initscr()
+	curses.wrapper(main)
+	# curses.noecho()
+    # curses.cbreak()
+    # w.addstr(1,0,'I am Gabe')
+    # w.nodelay(0)
